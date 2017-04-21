@@ -6,6 +6,7 @@ local protobuf = require "protobuf"
 local pb_files = {
     "./proto/pbhead.pb",
     "./proto/pblogin.pb",
+    "./proto/messages.pb",
 }
 
 local cmd = {}
