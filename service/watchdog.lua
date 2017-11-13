@@ -15,25 +15,6 @@ local redissrv
 function SOCKET.open(fd, addr)
     log.log("New client from : %s", addr)
     skynet.call(gate, "lua", "accept", fd)
-
-	skynet.fork(function()
-        while true do
-                log.log("heartbeat")
-                --[[
-                local msg = {
-                    id = 1999,
-                    msg = "heartbeat"
-                 }
-                skynet.send("watchdog", "lua", "socket", "send", fd, 0, "PbHeartbeat.MsgHeartbeatRsp",  msg)
-                ]]
-                local msg = {
-                    code = 200
-                 }
-                skynet.send("watchdog", "lua", "socket", "send", fd, 0, "Messages.SSCreateTableResponse",  msg)
-
-                skynet.sleep(3000)
-        end
-    end)
 end
 
 function SOCKET.close(fd)

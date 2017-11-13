@@ -40,4 +40,8 @@ yum install protobuf.x86_64
 
 # 运行  
 . run.sh  
-具体教程见wiki
+具体教程见wiki  
+
+# 使用cocos2dx 测试一下连接。
+clinet的地址：
+https://github.com/gameloses/cocos2dx_lua_skynet_client.git

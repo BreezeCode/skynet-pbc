@@ -1,5 +1,7 @@
---客户端请求处理，负责客户端请求的分发
-
+--
+-- Author: QingFengliu
+-- Date: 2017-11-12 14:49:20
+--
 local skynet = require "skynet"
 local utils = require "utils"
 

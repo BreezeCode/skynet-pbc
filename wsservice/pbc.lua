@@ -1,3 +1,7 @@
+--
+-- Author: QingFengliu
+-- Date: 2017-11-12 16:07:08
+--
 local skynet = require "skynet"
 require "skynet.manager"
 local utils = require "utils"
