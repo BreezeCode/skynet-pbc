@@ -1,0 +1,443 @@
+syntax = "proto3";
+package Game;
+
+message Player {  // 同房其他玩家信息
+    uint32 seat = 1;  // 座位号
+    string player = 2;  // 玩家UUID
+    string info = 3;  // 玩家详细信息
+    uint32 status = 4;  // 玩家状态
+    uint32 is_online = 5;  // 是否在线
+    uint32 total_score = 6;  // 玩家累计总分
+}
+
+message Unit {
+    uint32 room_id = 1;  // 6位房间号
+    uint32 room_status = 2; //房间状态
+    repeated string player = 3; // 在房间的玩家UUID
+    string owner = 4;
+    uint32 game_type = 5;
+    uint32 app_id = 6;
+    string room_uuid = 7;
+    uint32 st = 8;
+}
+
+message Card {
+    int32 card = 1;  // 牌
+}
+
+message Dice {
+    uint32 dice1 = 1;
+    uint32 dice2 = 2;
+}
+
+message Prompt {
+	uint32 action_id = 1;  // 动作ID
+	uint32 prompt = 2;  // 提示类型
+	repeated Card ref_card = 3;  // 关联牌
+	Card op_card = 4;   // 操作牌
+}
+
+message CardTip {
+	Card card = 1;
+	int32 points = 2;
+	int32 rest_cnt = 3;
+}
+message ActionRequest
+{
+	uint32 action_id = 1;  // 客户端选择的动作ID
+}
+
+message ActionResponse
+{
+	    repeated Card card = 1;
+	    string player = 2;  // 玩家UUID
+	    Card active_card = 3;  // 客户端的操作牌
+	    uint32 active_type = 4; // 玩家动作类型
+	    uint32 trigger_seat = 5; // 触发action玩家座位号
+	    string win_flag = 6;
+	    repeated Prompt prompt = 7;
+}
+
+message CreateRoomRequest
+{
+	uint32 room_id = 1;  // 6位房间号
+	string owner = 2;  // 房主UUID
+	string kwargs = 3;  // json 创建房间参数，由具体游戏各自解析字段
+	string room_uuid = 4; // 房间唯一标识
+}
+
+message CreateRoomResponse
+{
+	uint32 code = 1;  // 返回开房结果
+}
+
+message DealResponse
+{
+	    string dealer_uuid = 1;  // 庄家UUID
+	    Dice dice = 2;  // 筛子
+	    repeated Card cards_in_hand = 3;  // 发的手牌
+	    repeated Prompt prompt = 4;
+	    uint32 current_round = 5;  // 当前局数
+}
+
+message DiscardTipsResponse
+{
+	message Tip {
+		Card discard_card = 1;
+		repeated CardTip tip = 2;
+	}
+	repeated Tip tip = 1;
+}
+
+message DiscardRequest
+{
+	Card card = 1;
+}
+
+message DiscardResponse
+{
+	    Card card = 1;
+	    string player = 2;  // 玩家UUID
+	    repeated Prompt prompt = 3;
+}
+
+message DismissRoomWebRequest
+{
+	    uint32 room_id = 1;  // 6位房间号
+	    uint32 game_type = 2;
+	    uint32 app_id = 3;
+	    string owner = 4;
+	    string room_uuid = 5;
+}
+
+message DismissRoomWebResponse
+{
+	    uint32 code = 1;  // 返回解散房间结果
+	    uint32 room_id = 2;  // 6位房间号
+	    uint32 game_type = 3;
+	    uint32 app_id = 4;
+	    string owner = 5;
+}
+
+message DismissRoomRequest
+{
+}
+
+message DismissRoomResponse
+{
+	    uint32 code = 1;  // 返回解散房间结果
+	    uint32 flag = 2;  // 0 房主发起解散 1 投票发起解散
+}
+
+message DrawNiaoListResponse
+{
+	repeated Card card = 1;
+}
+
+message DrawResponse
+{
+	    Card card = 1;
+	    string player = 2;  // 玩家UUID
+	    repeated Prompt prompt = 3;
+}
+
+message EnterRoomOtherResponse
+{
+	    uint32 code = 1;  // 返回进入房间结果
+	    string player = 2;  // 玩家UUID
+	    uint32 seat = 3;  // 座位号
+	    string info = 4;  // 玩家详细信息
+}
+
+message EnterRoomWebResponse
+{
+	    uint32 code = 1;  // 返回退出房间结果
+	    uint32 room_id = 2;  // 6位房间号
+	    string player = 3;  // 玩家UUID
+	    uint32 game_type = 4;
+	    uint32 app_id = 5;
+}
+
+message EnterRoomRequest
+{
+	    uint32 room_id = 1;  // 6位房间号
+	    string player = 2;  // 玩家UUID
+	    string info = 3;  // 玩家详细信息
+}
+
+message EnterRoomResponse
+{
+	    uint32 code = 1;  // 返回进入房间结果 
+	    uint32 room_id = 2;  // 6位房间号
+	    string owner = 3;  // 房主UUID
+	    string kwargs = 4;  // json 创建房间参数，由具体游戏各自解析字段
+	    uint32 rest_cards = 5; // 剩余牌数
+	    repeated Player player = 6;
+	    string owner_info = 7;
+}
+
+message ExchangeBroadcastResponse
+{
+}
+
+message ExchangeInResponse
+{
+		uint32 dice = 1;
+		repeated Card card = 2;
+		uint32 seat = 3;
+}
+
+message ExchangeOutRequest
+{
+	repeated Card card = 1;
+}
+
+message ExchangeOutResponse
+{
+	uint32 seat = 1;  // 已完成换张的玩家座位号
+}
+
+message ExistRoomWebRequest
+{
+	uint32 room_id = 1;
+}
+
+message ExistRoomWebResponse
+{
+	bool flag = 1;
+}
+
+message ExitRoomWebResponse
+{
+	    uint32 code = 1;  // 返回退出房间结果
+	    uint32 room_id = 2;  // 6位房间号
+	    string player = 3;  // 玩家UUID
+	    uint32 game_type = 4;
+	    uint32 app_id = 5;
+}
+
+message ExitRoomRequest
+{
+}
+
+message ExitRoomResponse
+{
+	    uint32 code = 1;  // 返回退出房间结果
+	    string player = 2;  // 玩家UUID
+}
+
+message HeartbeatRequest
+{
+}
+
+message HeartbeatResponse
+{
+}
+
+message KickSuitBroadcastResponse
+{
+}
+
+message KickSuitRequest
+{
+	uint32 suit = 1;   // 1：万；2：筒；3：条；
+}
+
+message KickSuitResponse
+{
+		message PlayerSuit {
+			uint32 seat = 1;   // 座位号
+			uint32 suit = 2;   // 缺门
+		}
+		repeated PlayerSuit player_suit = 1;
+}
+
+message LoadBalanceWebResponse
+{
+	repeated Unit unit = 1;
+}
+
+message LoadMinusWebResponse
+{
+	    string addr = 1;
+	    uint32 port = 2;
+}
+
+message LoadPlusWebResponse
+{
+	    string addr = 1;
+	    uint32 port = 2;
+}
+
+message OnlineStatusResponse
+{
+	    string player = 1;  // 玩家UUID
+	    bool status = 2;  // 0 离线 1 上线
+}
+
+message PlayerVoteRequest
+{
+	bool flag = 1;
+}
+
+message PlayerVoteResponse
+{
+	    bool flag = 1;
+	    string player = 2;
+}
+
+message PromptResponse
+{
+	repeated Prompt prompt = 1;
+}
+
+message ReadyHandTipsResponse
+{
+	repeated CardTip tip = 1;
+}
+
+message ReadyRequest
+{
+}
+
+message ReadyResponse
+{
+	string player = 1;  // 玩家UUID
+}
+
+message ReconnectResponse
+{
+	    uint32 room_id = 1;  // 6位房间号
+	    string kwargs = 2;  // json 创建房间参数，由具体游戏各自解析字段
+	    string owner_uuid = 3;  // 房主UUID
+	    
+	    uint32 room_status = 4;  // 房间状态
+	    uint32 current_round = 5;  // 当前局数
+	    int32 dealer_seat = 6;  // 庄家seat
+	    int32 active_seat = 7;  // 当前活动玩家座位号
+	    int32 discard_seat = 8;  // 当前出牌玩家座位号
+	    uint32 rest_cards = 9; // 剩余牌数
+	
+	    Card card_draw = 10;  // 玩家摸的牌
+	
+	    message Player {  // 同房其他玩家信息
+	        uint32 seat = 1;  // 座位号
+	        string player = 2;  // 玩家UUID
+	        string info = 3;  // 玩家详细信息
+	        uint32 status = 4;  // 玩家状态
+	        uint32 is_online = 5;  // 是否在线
+	        int32 score = 6;  // 玩家累计总分
+	
+	        repeated Card cards_in_hand = 7;  // 手牌
+	        repeated Card cards_discard = 8;  // 打出去的牌
+			
+			message GroupCard {
+				repeated Card card = 1;		// 牌
+				int32 trigger_seat = 2;		// 触发的玩家座位号
+				string type = 3;			// 牌类型 吃chow 碰pong 暗杠concealed_kong 明杠exposed_kong 胡 win
+			}
+	        repeated GroupCard group_card = 9;  // 玩家的坎牌
+			bool deposit = 10;		// 是否处于托管状态
+			int32 kick_suit = 11; 			   // 定缺的门
+			repeated Card exchange_out = 12;   // 换出去的牌
+			repeated Card exchange_in = 13;	   // 换进来的牌
+			int32 exchange_dice = 14;  // 筛子
+			int32 exchange_seat = 15;  // 交换的玩家座位号
+	    }
+	
+	    repeated Player player = 11;
+	    uint32 code = 12;
+	    string owner_info = 13;
+	    uint32 max_cards = 14;
+}
+
+message RefundWebResponse
+{
+	    uint32 code = 1;  
+	    uint32 room_id = 2;  // 6位房间号
+	    uint32 game_type = 3;
+	    uint32 app_id = 4;
+	    string owner = 5;
+	    string room_uuid = 6;
+}
+
+message RunningWebResponse
+{
+		uint32 sessions = 1;  // 当前连接数
+		uint32 players = 2;  // 当前在线玩家数
+		uint32 tables_initial = 3;  // 未开局桌子数
+		uint32 tables_playing = 4;  // 已开局桌子数
+}
+
+message SettleForRoomResponse
+{
+	    uint32 flag = 1;  // 判断是正常完成所有局数还是解散房间 0 投票解散结算 1 正常解散
+	    message PlayerData {
+	        string player = 1;  // 玩家UUID
+	        uint32 seat = 2;  // 玩家座位号
+	        int32 total_score = 3;  // 玩家总分
+	        int32 top_score = 4;  // 玩家最高分
+	        uint32 win_total_cnt = 5;  // 玩家胡牌总次数
+	        uint32 win_draw_cnt = 6;  // 玩家自摸胡次数
+	        uint32 win_discard_cnt = 7;  // 玩家点炮胡次数
+	        uint32 pao_cnt = 8;  // 玩家放炮次数
+	        uint32 is_owner = 9;  // 是否为房主
+			uint32 kong_concealed_cnt = 10; // 暗杠次数
+	        uint32 kong_exposed_cnt = 11; // 明杠次数
+	    }
+	    repeated PlayerData player_data = 2;
+}
+
+message SettleForRoundResponse
+{
+	    message WinModel {
+			int32 type = 1;		// -2: 点炮  -1: 被自摸 0: 被查叫 1: 接炮 2: 自摸 
+			message Model {		// 牌型
+				string name = 1;   // 名称
+				int32 cnt = 2;	// 数目
+			}
+			repeated Model model = 2;
+			int32 points = 3;  // 对应番数
+		}
+		
+		message KongCnt {   // 杠次数
+			string name = 1;   // 名称  exposed  concealed  discard  pong
+			int32 cnt = 2;	// 数目
+		}
+		
+	    message PlayerData {
+	        string player = 1;  // 玩家UUID
+	        repeated Card cards_group = 2;  // 玩家组坎排
+	        repeated Card cards_in_hand = 3;  // 玩家手牌，如果胡牌则是胡的牌
+	        repeated Card win_card = 4;  // 玩家胡的牌
+	        int32 score = 5;  // 玩家当局分数
+	        int32 total = 6;  // 玩家累计总分
+	        repeated WinModel win_model = 7;
+			repeated KongCnt kong_cnt = 8;
+	    }
+	    repeated PlayerData player_data = 3;
+}
+
+message SpeakerRequest
+{
+	string content = 1;
+}
+
+message SpeakerResponse
+{
+	    string player = 1;
+	    string content = 2;
+}
+
+message SponsorVoteResponse
+{
+	    uint32 room_id = 1;  // 6位房间号
+	    string sponsor = 3;  // 发起投票玩家UUID
+	    uint32 expire_seconds = 4; // 投票超时时间
+}
+
+message SynchroniseCardsResponse
+{
+	repeated Card card = 1;
+}
+

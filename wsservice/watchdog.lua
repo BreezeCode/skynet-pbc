@@ -20,17 +20,18 @@ end
 
 function handler.on_message(ws, msg)
     skynet.error("Received a message from client:\n"..msg)
-    ws:send_text(msg);
+    --ws:send_text(msg);
 
-    local MsgLoginRsp = {
-        platform = 1,
-        user_id = "888888",
-        char_id = 1111, 
-        char_name = "breeze"
-    } 
-    local data = protopack.pack(0, "PbLogin.MsgLoginRsp",  MsgLoginRsp)
-    skynet.error(data)
-    ws:send_text(type(data));
+    local data = {seat=1, player="uuid1112233", info=msg, status=1, is_online=1, total_score=100}
+    --local endata = skynet.call(pbc, "lua", "encode", "Game.Player", data)
+    --local dedata = skynet.call(pbc, "lua", "decode", "Game.Player", endata)
+    
+    local ret = 0
+    local name = "Game.Player"
+    local pack = protopack.pack(ret, name, data)
+
+    --local name,body = protopack.unpack(pack)
+    ws:send_text("sssss" .. ws.fd);
 end
 
 function handler.on_error(ws, msg)
@@ -43,7 +44,7 @@ function handler.on_close(ws, code, reason)
     skynet.error(string.format("Client disconnected: %s", ws.addr))
     -- do not need close.
     -- ws:close
-end 
+end
 
 local function handle_socket(fd, addr)
     -- limit request body size to 8192 (you can pass nil to unlimit)

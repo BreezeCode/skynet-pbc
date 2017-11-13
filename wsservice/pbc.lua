@@ -10,6 +10,7 @@ local protobuf = require "protobuf"
 local pb_files = {
     "./proto/pbhead.pb",
     "./proto/pblogin.pb",
+    "./proto/game.pb",
 }
 
 local cmd = {}
@@ -21,7 +22,7 @@ function cmd.init()
 end
 
 function cmd.encode(msg_name, msg)
-    skynet.error("encode"..msg_name)
+    skynet.error("encode-name:"..msg_name)
     return protobuf.encode(msg_name, msg)
 end
 
@@ -30,15 +31,16 @@ function cmd.decode(msg_name, data)
     return protobuf.decode(msg_name, data)
 end
 
+--[[
+test method
+]]
 function cmd.test()
     skynet.error("pbc test...")
-    local msg = {account = "name"}
-    utils.print("msg = ",msg)
-    skynet.error("encode")
-    local data = cmd.encode("Login.Login", msg)
-    skynet.error("decode"..#(data))
-    local de_msg = cmd.decode("Login.Login", data)
-    skynet.error(de_msg.account)
+    local msg = {seat=1, player="uuid99999ffff", info="userinfo", status=1, is_online=1, total_score=100}
+    local data = protobuf.encode("Game.Player", msg)
+    skynet.error("decode ---len"..#(data))
+    local de_msg = protobuf.decode("Game.Player", data)
+    skynet.error(de_msg.player)
 end
 
 skynet.start(function ()
