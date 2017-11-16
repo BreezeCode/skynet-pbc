@@ -15,23 +15,25 @@ local handler = {}
 
 function handler.on_open(ws)
     skynet.error(string.format("Client connected: %s", ws.addr))
-    ws:send_text("Hello websocket !")
+    --ws:send_text("Hello websocket !")
 end
 
 function handler.on_message(ws, msg)
     skynet.error("Received a message from client:\n"..msg)
     --ws:send_text(msg);
 
-    local data = {seat=1, player="uuid1112233", info=msg, status=1, is_online=1, total_score=100}
-    --local endata = skynet.call(pbc, "lua", "encode", "Game.Player", data)
-    --local dedata = skynet.call(pbc, "lua", "decode", "Game.Player", endata)
-    
-    local ret = 0
-    local name = "Game.Player"
-    local pack = protopack.pack(ret, name, data)
+    local entroom = {
+        code=1, room_id=888888, owner="aa", kwargs="bb", rest_cards=8,
+        player = {{seat=1, player="cc测试一下中文", info="dd", status=1, is_online=1, total_score=111}},
+        owner_info="ee"
+    }
+    local endata = skynet.call(pbc, "lua", "encode", "Game.EnterRoomResponse", entroom)
 
-    --local name,body = protopack.unpack(pack)
-    ws:send_text("sssss" .. ws.fd);
+    local len = #endata
+    local cmd = 2
+    local pack = string.pack(">i4i4c"..len, len + 8, cmd, endata)
+
+    ws:send_binary(pack)
 end
 
 function handler.on_error(ws, msg)

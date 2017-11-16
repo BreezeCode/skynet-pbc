@@ -8,8 +8,6 @@ local utils = require "utils"
 local protobuf = require "protobuf"
 
 local pb_files = {
-    "./proto/pbhead.pb",
-    "./proto/pblogin.pb",
     "./proto/game.pb",
 }
 
@@ -36,11 +34,28 @@ test method
 ]]
 function cmd.test()
     skynet.error("pbc test...")
-    local msg = {seat=1, player="uuid99999ffff", info="userinfo", status=1, is_online=1, total_score=100}
-    local data = protobuf.encode("Game.Player", msg)
-    skynet.error("decode ---len"..#(data))
-    local de_msg = protobuf.decode("Game.Player", data)
-    skynet.error(de_msg.player)
+    
+    --[[
+    --简单嵌套
+    local cardtip = {card={card=8800}, points=2, rest_cnt=3}
+    local data = protobuf.encode("Game.CardTip", cardtip)
+    print("encode ---len:"..#(data))
+    local de_msg = protobuf.decode("Game.CardTip", data)
+    print("decode:"..(de_msg.card.card))
+    ]]
+    
+   --[[
+    嵌套list
+   ]]
+    local entroom = {
+        code=1, room_id=888888, owner="aa", kwargs="[]", rest_cards=8,
+        player = {{seat=1, player="cc测试一下中文", info="dd", status=1, is_online=1, total_score=111}},
+        owner_info="ee"
+    }
+    local data = protobuf.encode("Game.EnterRoomResponse", entroom)
+    print("encode ---len:"..#(data))
+    local de_msg = protobuf.decode("Game.EnterRoomResponse", data)
+    print("decode:"..(de_msg.player[1].player))
 end
 
 skynet.start(function ()
@@ -63,4 +78,6 @@ skynet.start(function ()
         local ret = f(...)
             skynet.ret(skynet.pack(ret))
     end)
+
+    cmd.test()
 end)
