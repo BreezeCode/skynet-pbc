@@ -1,4 +1,7 @@
---pb数据的序列化与反序列化
+--[[
+    pb数据的序列化与反序列化
+    Created by qingfengliu on 2017/11/16.
+]]
 
 local utils = require "utils"
 local skynet = require "skynet"
@@ -32,18 +35,22 @@ function M.pack(ret, name, msg)
         len = 2 + #buf_head + 1
         pack = string.pack(">Hs2s1", len, buf_head, 't')
     end
-    
     return pack
 end
 
-function M.unpack(data)
-    print("---------------Unpack")
-    local buf_head, buf_body, ch_end = string.unpack(">s2s2c1", data)
-    local msg_head = skynet.call(M.pbc, "lua", "decode", "PbHead.MsgHead", buf_head)
-    local msg_body = skynet.call(M.pbc, "lua", "decode", msg_head.msgname, buf_body)
-    utils.print(msg_head)
-    utils.print(msg_body)
-    return msg_head.msgname, msg_body
+function M.pack(cmd, name, msg)
+    local data = skynet.call(M.pbc, "lua", "encode", name, msg)
+    local len = #data
+    local pack = string.pack(">i4i4c"..len, len + 8, cmd, data)
+    return pack
+end
+
+function M.unpack(name, data)
+    print("---------------unpack")
+    local size, cmd = string.unpack(">i4i4", data)
+    local body = string.unpack(">c"..(size - 8), data, 9)
+    local msg = skynet.call(M.pbc, "lua", "decode", name, body)
+    return cmd, msg
 end
 
 return M

@@ -23,15 +23,18 @@ function handler.on_message(ws, msg)
     --ws:send_text(msg);
 
     local entroom = {
-        code=1, room_id=888888, owner="aa", kwargs="bb", rest_cards=8,
-        player = {{seat=1, player="cc测试一下中文", info="dd", status=1, is_online=1, total_score=111}},
+        code=1, room_id=888888, owner="aa", kwargs="{\"firstName\":\"John\", \"lastName\":\"Doe\" }", rest_cards=8,
+        player = {{seat=1, player="玩家信息", info="dd", status=1, is_online=1, total_score=111}},
         owner_info="ee"
     }
-    local endata = skynet.call(pbc, "lua", "encode", "Game.EnterRoomResponse", entroom)
+    
+    --序列化
+    local pack = protopack.pack(2, "Game.EnterRoomResponse", entroom)
 
-    local len = #endata
-    local cmd = 2
-    local pack = string.pack(">i4i4c"..len, len + 8, cmd, endata)
+    --反序列化
+    local _cmd, _msg = protopack.unpack("Game.EnterRoomResponse", pack)
+    print("unpack:", _cmd, _msg.player[1].player)
+    
 
     ws:send_binary(pack)
 end

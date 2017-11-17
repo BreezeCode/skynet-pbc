@@ -78,6 +78,4 @@ skynet.start(function ()
         local ret = f(...)
             skynet.ret(skynet.pack(ret))
     end)
-
-    cmd.test()
 end)
