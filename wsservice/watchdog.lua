@@ -68,6 +68,8 @@ skynet.start(function()
         socket.start(fd)
         pcall(handle_socket, fd, addr)
     end)
+
+    skynet.newservice("console")
     skynet.newservice("debug_console", "0.0.0.0", 6000)
 
 
