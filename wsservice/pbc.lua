@@ -20,12 +20,12 @@ function cmd.init()
 end
 
 function cmd.encode(msg_name, msg)
-    skynet.error("encode-name:"..msg_name)
+    --skynet.error("encode-name:"..msg_name)
     return protobuf.encode(msg_name, msg)
 end
 
 function cmd.decode(msg_name, data)
-    skynet.error("decode ".. msg_name.. " " .. type(data) .." " .. #data)
+    --skynet.error("decode ".. msg_name.. " " .. type(data) .." " .. #data)
     return protobuf.decode(msg_name, data)
 end
 

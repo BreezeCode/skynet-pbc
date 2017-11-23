@@ -3,6 +3,7 @@
 -- Date: 2017-11-21 18:55:43
 --
 local skynet = require "skynet"
+require "skynet.manager"
 
 local cmd_conf_arr = {
 	[2] = "Game.EnterRoomResponse",
@@ -28,6 +29,8 @@ skynet.start(function()
         local f = assert(CMD[cmd])
         local ret = f(...)
         print("skynet.pack(ret):", skynet.pack(ret), type(skynet.pack(ret)))
-        skynet.ret(skynet.pack(ret))
+        skynet.ret(skynet.pack(nil, ret))
     end)
+
+    skynet.register("commandconf")
 end)

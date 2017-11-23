@@ -18,8 +18,6 @@ local handler_arr = {
 
 --登录
 function funs.enter_room_res(fd, msg)
-   print("enter_room_res------", msg.player[1].player, fd)
-
    --返回数据
    local entroom = {
         code=1, room_id=888888, owner="aa", kwargs="{\"firstName\":\"John\", \"lastName\":\"Doe\" }", rest_cards=8,
@@ -41,8 +39,8 @@ function CMD.init()
 end
 
 --根据协议名，调用对用处理函数
-function CMD.handle(fd, msg_id, msg)
-    local f = handler_arr[msg_id]
+function CMD.handle(fd, cmd, msg)
+    local f = handler_arr[cmd]
     f(fd, msg)
 end
 
