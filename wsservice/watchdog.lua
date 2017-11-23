@@ -8,7 +8,9 @@ local websocket = require "websocket"
 local socket = require "socket"
 local protopack = require "protopack"
 local sockethelper = require "http.sockethelper"
+require "skynet.manager"
 
+local ws_arr = {}
 local cmdconf
 local pbc
 local socket_handler
@@ -17,6 +19,7 @@ local handler = {}
 
 function handler.on_open(ws)
     skynet.error(string.format("Client connected: %s", ws.addr))
+    ws_arr[ws.fd] = ws
     --ws:send_text("Hello websocket !")
 end
 
@@ -69,7 +72,24 @@ local function handle_socket(fd, addr)
     end
 end
 
+
+local CMD = {}
+function CMD.send(fd, code, msg)
+    local pack = protopack.pack(2, msg)
+    ws_arr[fd]:send_binary(pack)
+end
+
 skynet.start(function()
+    skynet.dispatch("lua", function(_, _, cmd, ...)
+        local f = CMD[cmd]
+        if f then
+            f(...)
+        else
+            log.log("service_clienthandler invalid_cmd %s", cmd)
+        end
+    end)
+
+
     local fd = assert(socket.listen("0.0.0.0:6001"))
     socket.start(fd , function(fd, addr)
         socket.start(fd)
@@ -86,6 +106,8 @@ skynet.start(function()
     protopack.cmdconf = cmdconf
 
     socket_handler = skynet.uniqueservice("sockethandler")
+
+    skynet.register("watchdog")
 end)
 
 

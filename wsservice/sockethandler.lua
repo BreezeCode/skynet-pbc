@@ -18,8 +18,16 @@ local handler_arr = {
 
 --登录
 function funs.enter_room_res(fd, msg)
-   print("enter_room_res------", msg.player[1].player)
-   --skynet.send("watchdog", "lua", "socket", "send", fd, 0, "PbLogin.MsgLoginRsp",  MsgLoginRsp)
+   print("enter_room_res------", msg.player[1].player, fd)
+
+   --返回数据
+   local entroom = {
+        code=1, room_id=888888, owner="aa", kwargs="{\"firstName\":\"John\", \"lastName\":\"Doe\" }", rest_cards=8,
+        player = {{seat=1, player="这是返回的信息", info="dd", status=1, is_online=1, total_score=111}},
+        owner_info="ee"
+    }
+
+   skynet.send("watchdog", "lua", "send", fd, 2,  entroom)
 end
 
 --------------------------------------------------------------------------------
