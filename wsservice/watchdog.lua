@@ -26,27 +26,25 @@ end
 function handler.on_message(ws, msg)
     skynet.error("Received a message from client:\n"..msg)
 
-    
     local entroom = {
         code=1, room_id=888888, owner="aa", kwargs="{\"firstName\":\"John\", \"lastName\":\"Doe\" }", rest_cards=8,
         player = {{seat=1, player="玩家信息", info="dd", status=1, is_online=1, total_score=111}},
         owner_info="ee"
     }
-    
     --序列化
     local pack = protopack.pack(2, entroom)
 
     --[[
     --反序列化
-    local _cmd, _msg = protopack.unpack(pack)
-    print("unpack:", _cmd, _msg.player[1].player)
-
-    --ws:send_binary(pack)
+    local _msg = protopack.unpack(pack)
+    print("unpack:", _msg.player[1].player)
+    ws:send_binary(pack)
     ]]
     
     local _, _cmd = protopack.getHead(pack)
     local _msg = protopack.unpack(pack)
     skynet.send(socket_handler, "lua", "handle", ws.fd, _cmd, _msg)
+
 end
 
 function handler.on_error(ws, msg)
@@ -103,7 +101,6 @@ skynet.start(function()
 
     pbc = skynet.uniqueservice("pbc")
     protopack.pbc = pbc
-    protopack.cmdconf = cmdconf
 
     socket_handler = skynet.uniqueservice("sockethandler")
 

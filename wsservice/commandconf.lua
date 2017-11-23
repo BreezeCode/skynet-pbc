@@ -27,9 +27,8 @@ end
 skynet.start(function()
     skynet.dispatch("lua", function (_, _, cmd, ...)
         local f = assert(CMD[cmd])
-        local ret = f(...)
-        print("skynet.pack(ret):", skynet.pack(ret), type(skynet.pack(ret)))
-        skynet.ret(skynet.pack(nil, ret))
+        ret = f(...)
+        skynet.ret(skynet.pack(ret))
     end)
 
     skynet.register("commandconf")
