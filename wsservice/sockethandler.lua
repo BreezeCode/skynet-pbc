@@ -4,6 +4,7 @@
 --
 local skynet = require "skynet"
 local utils = require "utils"
+local crypt = require "crypt"
 
 local funs = {}
 local login
@@ -11,13 +12,16 @@ local agentmgr
 local roommgr
 
 local handler_arr = {
-    [2] = function(...) funs.enter_room_res(...) end,
+    [1] = function(...) funs.enter_room_req(...) end,
 }
 
 --------------------------------------------------------------------------------
 
 --登录
-function funs.enter_room_res(fd, msg)
+function funs.enter_room_req(fd, msg)
+    --skynet.error(crypt.base64decode(msg))
+
+    skynet.error(string.format("enter_room_req roomid:%s player:%s info:%s", msg.room_id, msg.player, msg.info))
    --返回数据
    local entroom = {
         code=1, room_id=888888, owner="aa", kwargs="{\"firstName\":\"John\", \"lastName\":\"Doe\" }", rest_cards=8,

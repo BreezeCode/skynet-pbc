@@ -23,28 +23,37 @@ function handler.on_open(ws)
     --ws:send_text("Hello websocket !")
 end
 
-function handler.on_message(ws, msg)
-    skynet.error("Received a message from client:\n"..msg)
+function handler.on_message(ws, buff)
+    --半包，全包，粘包处理
+    if ws._stick_package_stack then
+        buff = ws._stick_package_stack .. buff
+        ws._stick_package_stack = nil
+    end
 
-    local entroom = {
-        code=1, room_id=888888, owner="aa", kwargs="{\"firstName\":\"John\", \"lastName\":\"Doe\" }", rest_cards=8,
-        player = {{seat=1, player="玩家信息", info="dd", status=1, is_online=1, total_score=111}},
-        owner_info="ee"
-    }
-    --序列化
-    local pack = protopack.pack(2, entroom)
+    local _size = protopack.getSize(buff)
 
-    --[[
-    --反序列化
-    local _msg = protopack.unpack(pack)
-    print("unpack:", _msg.player[1].player)
-    ws:send_binary(pack)
-    ]]
-    
-    local _, _cmd = protopack.getHead(pack)
-    local _msg = protopack.unpack(pack)
-    skynet.send(socket_handler, "lua", "handle", ws.fd, _cmd, _msg)
+    local _raw_size = #buff
 
+    if _raw_size > _size then           --至少有一个包
+        local _, _cmd = protopack.getHead(buff)
+
+        skynet.error("on_message_cmd:".._cmd)
+
+        local _msg = protopack.unpack(buff)
+        skynet.send(socket_handler, "lua", "handle", ws.fd, _cmd, _msg)
+
+        local rest = string.sub(buff, _size)
+        handler.on_message(ws, rest)
+    elseif _raw_size < _size then      --半包
+         ws._stick_package_stack = buff
+    elseif _raw_size == _size then     --整包
+        local _, _cmd = protopack.getHead(buff)
+
+        skynet.error("on_message_cmd:\n".._cmd)
+
+        local _msg = protopack.unpack(buff)
+        skynet.send(socket_handler, "lua", "handle", ws.fd, _cmd, _msg)
+    end
 end
 
 function handler.on_error(ws, msg)

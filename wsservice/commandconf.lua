@@ -6,6 +6,7 @@ local skynet = require "skynet"
 require "skynet.manager"
 
 local cmd_conf_arr = {
+	[1] = "Game.EnterRoomRequest",
 	[2] = "Game.EnterRoomResponse",
 }
 

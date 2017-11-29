@@ -16,12 +16,17 @@ local ver_3 = 0
 
 local _M = {}
 
-function _M.getHead(msg)
+function _M.getSize(buff)
+    local size = string.unpack(">i4", buff)
+    return size
+end
+
+function _M.getHead(buff)
     --[[
-    local size, cmd = string.unpack(">i4i4", msg)
+    local size, cmd = string.unpack(">i4i4", buff)
     return size, cmd
     ]]
-    local size, _, _, _, _, _, _, _, cmd = string.unpack(">i4i4hhi4bbbb", msg)
+    local size, _, _, _, _, _, _, _, cmd = string.unpack(">i4i4hhi4bbbb", buff)
     return size, cmd
 end
 
@@ -34,7 +39,6 @@ function _M.pack(cmd, msg)
     return pack
     ]]
 
-    -->iihhibbbb{0}s
     send_id = send_id + 1
     local p_name = skynet.call("commandconf", "lua", "get_proto_name", cmd)
     local data = skynet.call(_M.pbc, "lua", "encode", p_name, msg)
@@ -43,21 +47,23 @@ function _M.pack(cmd, msg)
     return pack
 end
 
-function _M.unpack(data)
+function _M.unpack(buff)
     --[[
-    local size, cmd = string.unpack(">i4i4", data)
-    local body = string.unpack(">c"..(size - 8), data, 9)
+    local size, cmd = string.unpack(">i4i4", buff)
+    local body = string.unpack(">c"..(size - 8), buff, 9)
 
     local p_name = skynet.call("commandconf", "lua", "get_proto_name", cmd)
     local msg = skynet.call(_M.pbc, "lua", "decode", p_name, body)
     return msg
     ]]
+
     
-    local size, _, _, _, _, _, _, _, cmd = string.unpack(">i4i4hhi4bbbb", data)
-    local body = string.unpack(">c"..(size - 20), data, 21)
+    local size, _, _, _, _, _, _, _, cmd = string.unpack(">i4i4hhi4bbbb", buff)
+    local body = string.unpack(">c"..(size - 20), buff, 21)
 
     local p_name = skynet.call("commandconf", "lua", "get_proto_name", cmd)
     local msg = skynet.call(_M.pbc, "lua", "decode", p_name, body)
+
     return msg
 end
 
