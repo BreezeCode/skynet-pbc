@@ -37,8 +37,6 @@ function handler.on_message(ws, buff)
     if _raw_size > _size then           --至少有一个包
         local _, _cmd = protopack.getHead(buff)
 
-        skynet.error("on_message_cmd:".._cmd)
-
         local _msg = protopack.unpack(buff)
         skynet.send(socket_handler, "lua", "handle", ws.fd, _cmd, _msg)
 
@@ -48,8 +46,6 @@ function handler.on_message(ws, buff)
          ws._stick_package_stack = buff
     elseif _raw_size == _size then     --整包
         local _, _cmd = protopack.getHead(buff)
-
-        skynet.error("on_message_cmd:\n".._cmd)
 
         local _msg = protopack.unpack(buff)
         skynet.send(socket_handler, "lua", "handle", ws.fd, _cmd, _msg)
