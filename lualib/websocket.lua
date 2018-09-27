@@ -3,7 +3,7 @@
 -- This file is modified version from from "https://github.com/Skycrab/skynet_websocket"
 
 local crypt = require "crypt"
-local socket = require "skynet.socket"
+local socket = require "socket"
 local httpd = require "http.httpd"
 local sockethelper = require "http.sockethelper"
 local urllib = require "http.url"
