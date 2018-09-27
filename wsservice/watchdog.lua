@@ -5,7 +5,7 @@
 local skynet = require "skynet"
 local httpd = require "http.httpd"
 local websocket = require "websocket"
-local socket = require "skynet.socket"
+local socket = require "socket"
 local protopack = require "protopack"
 local sockethelper = require "http.sockethelper"
 require "skynet.manager"
